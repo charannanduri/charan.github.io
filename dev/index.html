@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charan's Mainframe Emulator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="desktop">
+        <div id="terminal">
+            <div class="top-bar">
+                <div class="window-buttons">
+                    <span class="window-button close"></span>
+                    <span class="window-button minimize"></span>
+                    <span class="window-button maximize"></span>
+                </div>
+                <div class="title-bar">charan.xyz — zsh</div>
+            </div>
+            <div id="output-container">
+                <div id="output">
+                </div>
+            </div>
+            <div id="output"></div>
+            <div id="input-line" class="input-line">
+                <div class="prompt">user@charan.xyz:~$</div>
+                <div><input id="input" class="cmdline" autofocus /></div>
+            </div>
+        </div>
+    </div>   
+    <script src="script.js"></script>
+</body>
+</html>

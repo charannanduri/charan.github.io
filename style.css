@@ -19,10 +19,7 @@ html, body {
     align-items: center; /* Center children vertically */
 }
 #terminal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    /* position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); */ /* Centering handled by #desktop flex */
     background-color: #000;
     color: #fff;
     font-family: 'Monaco', 'Consolas', 'Courier New', 'Lucida Console', monospace;
@@ -37,18 +34,16 @@ html, body {
 
 
 .top-bar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 24px; /* Reduced height for a thinner top bar */
+    /* position: absolute; top: 0; left: 0; right: 0; */ /* Removed absolute positioning */
+    height: 24px; /* Keep fixed height for consistency */
     background-color: #e1e1e1;
     border-top-left-radius: 5px; /* Rounded corners on the top */
     border-top-right-radius: 5px;
     display: flex;
     align-items: center;
     justify-content: start; /* Align window buttons to the start (left) */
-    padding: 4px; /* Reduced padding */
+    padding: 4px;
+    flex-shrink: 0; /* Prevent shrinking */
 }
 
 .window-buttons {
@@ -85,7 +80,8 @@ html, body {
 #output-container {
     flex-grow: 1;
     overflow-y: auto;
-    padding: 20px;
+    padding: 20px; /* Consolidated padding here */
+    /* Add margin-top to account for top-bar height if needed, but flex should handle it */
 }
 
 #output-container::-webkit-scrollbar {
@@ -104,7 +100,7 @@ html, body {
 
 #output {
     margin-bottom: 10px;
-    padding-top: 10px;
+    /* padding-top: 10px; */ /* Removed redundant padding */
 }
 
 .cmdline {
@@ -119,16 +115,24 @@ html, body {
 }
 
 .input-line {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: calc(100% - 40px); /* Adjust width to account for padding */
+    /* position: absolute; bottom: 0; left: 0; */ /* Removed absolute positioning */
+    /* width: calc(100% - 40px); */ /* Width will be 100% of flex item */
+    width: 100%;
     display: flex;
+    align-items: center; /* Vertically align prompt and input */
     padding: 4px 20px;
-    box-sizing: border-box; /* Ensure padding is included in width */
+    box-sizing: border-box;
+    flex-shrink: 0; /* Prevent shrinking */
 }
 
+.input-line > div:last-child {
+    flex-grow: 1; /* Allow the input container to grow */
+}
 
+.input-line .cmdline {
+    width: 100%; /* Make input fill its container */
+    box-sizing: border-box; /* Include padding in width */
+}
 
 @keyframes blink {
     50% {
@@ -181,16 +185,14 @@ input.cmdline:focus {
         max-height: 80vh; /* Ensure it doesn't exceed viewport height */
     }
 
-    #welcome-overlay {
-        display: none; /* Hide welcome overlay on smaller screens */
-    }
+    /* #welcome-overlay hidden */
 
     #output-container {
         padding: 15px;
     }
 
     .input-line {
-        width: calc(100% - 30px);
+        /* width: calc(100% - 30px); */ /* Not needed, width is 100% */
         padding: 8px 15px;
     }
 
@@ -210,8 +212,15 @@ input.cmdline:focus {
 @media (max-width: 480px) {
     #terminal {
         width: 100%;
-        height: 90%;
+        height: 100%; /* Make terminal full screen */
+        max-height: none; /* Override max-height */
         border-radius: 0;
+        box-shadow: none; /* Optional: remove shadow */
+    }
+
+    .top-bar {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
     }
 
     #terminal, .cmdline {
@@ -220,15 +229,12 @@ input.cmdline:focus {
 
     .input-line {
         padding: 10px 15px;
+        /* Width is already 100% */
     }
 
-    #welcome-overlay p {
-        font-size: 1.2em;
-        width: 100%;
-        padding: 0 10px;
-    }
+    /* #welcome-overlay hidden */
 
-    /* Hide window buttons on very small screens */
+    /* Hide window buttons */
     .window-buttons {
         display: none;
     }

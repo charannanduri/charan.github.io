@@ -52,17 +52,14 @@ document.addEventListener('DOMContentLoaded', (event) => {
     if (msg1 && msg2 && msg3) {
         setTimeout(() => { // Initial delay
             typeWelcomeMessage(msg1, msg1Text, typingSpeed, () => {
+                // After msg1 types, backspace it
                 backspaceWelcomeMessage(msg1, backspaceSpeed, () => {
+                    // After msg1 backspaces, type msg2
                     typeWelcomeMessage(msg2, msg2Text, typingSpeed, () => {
+                        // After msg2 types, backspace it
                         backspaceWelcomeMessage(msg2, backspaceSpeed, () => {
-                            typeWelcomeMessage(msg3, msg3Text, typingSpeed, () => {
-                                // After the last message is typed, wait a bit then hide overlay
-                                setTimeout(() => {
-                                    if (welcomeOverlay) {
-                                        welcomeOverlay.classList.add('welcome-done');
-                                    }
-                                }, 2000); // Wait 2 seconds after last message
-                            });
+                            // After msg2 backspaces, type msg3
+                            typeWelcomeMessage(msg3, msg3Text, typingSpeed, null); // Pass null callback
                         });
                     });
                 });

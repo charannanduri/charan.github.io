@@ -30,8 +30,6 @@ html, body {
     flex-direction: column;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     overflow: hidden;
-    /* Added transition for keyboard padding */
-    transition: padding-bottom 0.2s ease-out;
 }
 
 
@@ -179,158 +177,129 @@ input.cmdline:focus {
     pointer-events: none; /* Prevent interaction after fade */
 }
 
-#welcome-overlay.welcome-done {
-    /* Class added by JS after welcome sequence */
-    /* Makes the container collapse */
-    height: 0 !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    overflow: hidden !important;
-    transition: all 0.5s ease-out;
-}
-
 /* Responsive Design Adjustments */
 @media (max-width: 768px) {
-    #desktop {
-        /* Remove centering, just provide background */
-        justify-content: initial;
-        align-items: initial;
+    #terminal {
+        width: 95%; /* Increase width on smaller screens */
+        height: 85%; /* Increase height on smaller screens */
+        max-height: 80vh; /* Ensure it doesn't exceed viewport height */
     }
 
-    #terminal {
-        width: 100%;
-        height: 100%;
-        border-radius: 0;
-        box-shadow: none;
-        /* padding-bottom will be added dynamically by JS class */
+    /* #welcome-overlay hidden */
+
+    #output-container {
+        padding: 15px;
+    }
+
+    .input-line {
+        /* width: calc(100% - 30px); */ /* Not needed, width is 100% */
+        padding: 8px 15px;
+    }
+
+    /* Improve touch targets */
+    .window-button {
+        height: 14px;
+        width: 14px;
+        margin-right: 10px;
     }
 
     .top-bar {
-        display: none; /* Hide grey bar */
+        height: 28px;
+        padding: 6px;
     }
+}
 
-    #welcome-overlay {
-        position: relative; /* Change from absolute to flow in flex */
-        order: -1; /* Place it before the output container */
-        top: unset;
-        left: unset;
-        right: unset;
-        transform: none;
-        height: auto; /* Let content dictate height */
-        padding: 20px 15px 0 15px; /* Add some padding */
-        flex-shrink: 0; /* Don't let it shrink */
-        z-index: auto;
-        pointer-events: auto; /* Allow interaction if needed, though text fades */
-        /* Reset base styles */
-        font-family: 'Monaco', 'Consolas', 'Courier New', 'Lucida Console', monospace;
-        color: #cccccc;
-    }
-
-    #welcome-overlay p {
-        position: static; /* Remove absolute positioning */
-        transform: none;
+@media (max-width: 480px) {
+    #terminal {
         width: 100%;
-        max-width: 100%;
-        font-size: 1.1em; /* Adjust mobile font size */
-        font-weight: normal; /* Adjust weight if needed */
-        text-align: left; /* Or center if preferred */
-        margin: 0 0 10px 0; /* Reset margin and add bottom space */
-        /* Inherit color from #welcome-overlay */
-        /* Ensure transition still works */
-        transition: opacity 0.8s ease-out;
+        height: 100%; /* Make terminal full screen */
+        max-height: none; /* Override max-height */
+        border-radius: 0;
+        box-shadow: none; /* Optional: remove shadow */
     }
 
-    /* Keep fade-out class */
-    #welcome-overlay p.fade-out {
-        opacity: 0;
-        pointer-events: none;
+    .top-bar {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
     }
 
-    /* Keep welcome-done class */
-     #welcome-overlay.welcome-done {
-         height: 0 !important;
-         padding: 0 !important;
-         margin: 0 !important;
-         overflow: hidden !important;
-         transition: all 0.5s ease-out;
-     }
-
-
-    #output-container {
-        padding: 15px; /* Adjust padding */
+    #terminal, .cmdline {
+        font-size: 14px; /* Slightly larger font for better readability */
     }
 
     .input-line {
         padding: 10px 15px;
-        /* Ensure base styles don't conflict */
-        width: 100%;
-        display: flex;
-        align-items: center;
-        box-sizing: border-box;
-        flex-shrink: 0;
+        /* Width is already 100% */
     }
 
-     .input-line > div:last-child {
-         flex-grow: 1;
-     }
+    /* #welcome-overlay hidden */
 
-     .input-line .cmdline {
-        width: 100%;
-        box-sizing: border-box;
-        font-size: 16px; /* Ensure touch font size */
-        padding: 8px;
-        /* Ensure base styles don't conflict */
-         background-color: #000;
-         color: #fff;
-         border: none;
-         outline: none;
-         font-family: 'Monaco', 'Consolas', 'Courier New', 'Lucida Console', monospace;
-    }
-
-    /* Hide window buttons (already done in <480px, but good to ensure) */
+    /* Hide window buttons */
     .window-buttons {
         display: none;
     }
 
-    /* Touch/Keyboard specific */
+    .title-bar {
+        text-align: left;
+        padding-left: 10px;
+    }
+}
+
+/* Touch-specific optimizations */
+@media (hover: none) {
+    .window-button {
+        opacity: 0.7;
+    }
+
+    .cmdline {
+        font-size: 16px; /* Larger font for touch input */
+        padding: 8px;
+    }
+
     #output-container {
         -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
     }
-
-     /* Remove old overrides if they conflict */
-     @media (max-width: 480px) {
-         /* Styles for < 480px are mostly covered by < 768px now */
-         /* Remove any specific overrides here if not needed */
-         #terminal, .cmdline {
-            /* font-size already set in 768px */
-         }
-         .title-bar {
-            /* Already hidden */
-         }
-     }
-     @media (hover: none) {
-        /* Styles for touch devices */
-        /* cmdline font-size already set */
-     }
-     @media (max-height: 500px) and (orientation: landscape) {
-        /* Remove old landscape rules as they likely conflict */
-        /* #terminal {} */
-        /* #welcome-overlay {} */
-        /* #welcome-overlay p {} */
-
-        /* Add new landscape rules if needed, e.g., adjusting keyboard padding */
-        body.keyboard-visible #terminal {
-            padding-bottom: 45vh; /* Example: Larger padding needed in landscape */
-        }
-     }
 }
 
+/* Landscape mode optimizations */
+@media (max-height: 500px) and (orientation: landscape) {
+    #terminal {
+        height: 95%;
+        width: 90%;
+    }
 
-/* Keyboard handling - applies only when class is added by JS */
-body.keyboard-visible #terminal {
-    /* Add padding to the bottom to push the input line up */
-    /* This rule applies on mobile due to the class being added by JS focus event */
-    padding-bottom: 35vh; /* STARTING VALUE - Adjust based on testing */
+    #welcome-overlay {
+        top: 5%;
+    }
+
+    #welcome-overlay p {
+        font-size: 1.2em;
+    }
+}
+
+/* Keyboard handling adjustments */
+body.keyboard-visible {
+    /* When keyboard is up, we might need to adjust the terminal position */
+    /* Option 1: Adjust the terminal's bottom position */
+    /* 
+    #terminal {
+        bottom: 40vh; /* Example value, adjust based on keyboard height */
+        /* transition: bottom 0.2s ease-out; */ /* Smooth transition */
+    /* }
+    */
+
+    /* Option 2: Add padding to the bottom of the body or a container */
+    /* This pushes content up. Might require #desktop to have height: auto */
+     /* padding-bottom: 40vh; */
+
+    /* Option 3: Adjust the height or max-height of the terminal */
+    #terminal {
+        /* Reduce height/max-height to make space */
+        /* Adjust these values based on testing */
+        height: 50%; /* Example */
+        max-height: 50vh; /* Example */
+        transition: height 0.2s ease-out, max-height 0.2s ease-out; /* Smooth transition */
+    }
 }
 
 

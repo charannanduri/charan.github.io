@@ -277,4 +277,29 @@ input.cmdline:focus {
     }
 }
 
+/* Keyboard handling adjustments */
+body.keyboard-visible {
+    /* When keyboard is up, we might need to adjust the terminal position */
+    /* Option 1: Adjust the terminal's bottom position */
+    /* 
+    #terminal {
+        bottom: 40vh; /* Example value, adjust based on keyboard height */
+        /* transition: bottom 0.2s ease-out; */ /* Smooth transition */
+    /* }
+    */
+
+    /* Option 2: Add padding to the bottom of the body or a container */
+    /* This pushes content up. Might require #desktop to have height: auto */
+     /* padding-bottom: 40vh; */
+
+    /* Option 3: Adjust the height or max-height of the terminal */
+    #terminal {
+        /* Reduce height/max-height to make space */
+        /* Adjust these values based on testing */
+        height: 50%; /* Example */
+        max-height: 50vh; /* Example */
+        transition: height 0.2s ease-out, max-height 0.2s ease-out; /* Smooth transition */
+    }
+}
+
 

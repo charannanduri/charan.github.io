@@ -134,14 +134,14 @@ function processCommand(command) {
                 "resume: summarized resume and a link to download the pdf",
                 "projects: a list of projects that Ive done (sorry its not updated supper often)",
                 "about site: how I built this site, and how you could make something similar!",
-                "Theres also some easter eggs! ..."
+                "Theres also some easter eggs..."
 
             ];
             typeOut(helpCommands, output);
             break;
         case 'about':
             const aboutCharan = [
-                "Hey yall. Im Charan. I enjoy building electronics, economics & markets, and fashion. I also love basketball. Lets Go Cavs!. Feel free to drop me a line or LinkedIn. Use the resume command to find my handle!"
+                "Hey, I'm Charan. I enjoy building electronics, economics & markets. I also love basketball. Lets Go Cavs!. Feel free to drop me a line or LinkedIn. Use the resume command to find my handle!"
             ];
             typeOut(aboutCharan, output);
             break;
@@ -151,9 +151,10 @@ function processCommand(command) {
                 "",
                 "I spend a bunch of time in the macOS terminal, I thought it would be cool to emulate it for my personal site.",
                 "This was all built in native CSS, JS and HTML.",
-                "While I did use GPT4 Turbo for some of the site, a lot of it was done by me with a ton of trial and error... lol",
-                "If youre savvy enough Im sure you could poke around inspect element and figure it out.",
-                "If you want to build a site just like this, email me at nanduri.9@osu.edu, and Ill get you sorted.",
+                "While I did use GPT4 Turbo for some of the site, and Gemini 2.5 Pro to update it, ",
+                "a lot of it was done by me with a ton of trial and error.",
+                "Check out my GitHub for the source code!",
+                "If you want to build a site just like this, email me at nanduri.9@osu.edu, and I'll get you sorted.",
 
             ];
             typeOut(aboutSite, output);
@@ -161,8 +162,8 @@ function processCommand(command) {
         case 'resume':
             resumeViewed = true;
             const resumeContent = [
-                "Venkat-Saicharan (Charan) A. Nanduri",
-                "Electrical & Computer Engineering (Spring 2025)", 
+                "Venkat (Charan) Nanduri",
+                "Electrical & Computer Engineering", 
                 "Minor in Economics",
                 "Contact: nanduri.9@osu.edu | (614) 542-9691 | linkedin.com/in/charannanduri",
                 "Experience:",
@@ -170,7 +171,8 @@ function processCommand(command) {
                 "Skills:", 
                 "Microelectronics, Computer Architecture, Linux, Altium Designer, C/C++, MATLAB",
                 "Projects:",
-                "Capacitive Touch Sensing, Liquid Metal Cooled Inverter, Inductive Sensing",
+                "Currently: Porting PebbleOS to ESP32-S3",
+                "Other: Capacitive Touch Sensing, Liquid Metal Cooled Inverter, Inductive Sensing, Pi Pico Clock",
                 "Education:",
                  "The Ohio State University, Purdue University",
             ];

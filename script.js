@@ -119,33 +119,12 @@ inputElement.addEventListener('keydown', function(event) {
     }
 });
 
-// --- Keyboard Handling for Mobile ---
-inputElement.addEventListener('focus', function() {
-    // Add a class to the body or terminal when the input is focused
-    // This helps CSS rules adjust the layout for the keyboard
-    document.body.classList.add('keyboard-visible');
-});
-
-inputElement.addEventListener('blur', function() {
-    // Remove the class when the input loses focus
-    document.body.classList.remove('keyboard-visible');
-    // Optional: Ensure scrolling is correct after keyboard hides
-    setTimeout(scrollToBottom, 100); // Small delay might be needed
-});
-// --- End Keyboard Handling ---
-
 function processCommand(command) {
     const output = document.getElementById('output');
     // Display the command line itself before processing/typing output
-    // appendToOutput(command, command); // REMOVED THIS LINE
+    appendToOutput(command, command);
 
     let resumeViewed = false; // Assuming this should be scoped or managed differently if persistence is needed
-
-    // --- Add the executed command to the output ---
-    const commandLine = document.createElement('div');
-    commandLine.textContent = `user@charan.xyz:~$ ${command}`; // Manually add prompt + command here
-    output.appendChild(commandLine);
-    // --- End command display ---
 
     switch (command.toLowerCase()) {
         case 'help':
@@ -251,13 +230,13 @@ function processCommand(command) {
             const errorLine = document.createElement('div');
             errorLine.textContent = 'Error: Command not found. type help for a list of commands';
             output.appendChild(errorLine); // Append the error line
-            appendToOutput('', ''); // Append the next prompt line ONLY AFTER the error
+            appendToOutput('', ''); // Append the next prompt line
             return; // Exit switch to avoid calling typeOut
     }
     // Note: typeOut now handles appending the next prompt after it finishes
 }
 
-function typeOut(lines, callback) { // Added callback parameter
+function typeOut(lines) {
     const output = document.getElementById('output');
     let currentLine = 0;
 
@@ -266,30 +245,29 @@ function typeOut(lines, callback) { // Added callback parameter
             let line = lines[currentLine];
             let charIndex = 0;
             let currentLineDiv = document.createElement('div'); // Create div for the line
-            // Preserve leading spaces for formatting (like Block O)
-            currentLineDiv.style.whiteSpace = 'pre';
             output.appendChild(currentLineDiv); // Append div to output area
 
             let typeChar = function() {
                 if (charIndex < line.length) {
-                    currentLineDiv.textContent += line[charIndex++];
-                    setTimeout(typeChar, 10); // Adjust typing speed if needed
-                } else {
-                    currentLine++;
+                    currentLineDiv.textContent += line[charIndex++]; // Append char to the line div
                     scrollToBottom();
-                    setTimeout(typeLine, 50); // Delay between lines
+                    setTimeout(typeChar, 10); // Typing speed
+                } else {
+                    // Finished typing this line
+                    currentLine++;
+                    if (currentLine < lines.length) {
+                        setTimeout(typeLine, 10); // Start next line quickly
+                    } else {
+                        // Finished typing all lines for this command
+                        appendToOutput('', ''); // Append the next prompt line *after* all typing is done
+                    }
                 }
             };
-            typeChar();
-        } else {
-            // Finished typing all lines
-            appendToOutput('', ''); // Add the next prompt line ONLY after typing finishes
-            if (callback) {
-                callback(); // Execute callback if provided
-            }
+            typeChar(); // Start typing the first character of the current line
         }
     }
-    typeLine();
+
+    typeLine(); // Start typing the first line
 }
 
 function scrollToBottom() {
@@ -298,23 +276,30 @@ function scrollToBottom() {
 }
 
 // Modified appendToOutput to handle displaying the command line or just the next prompt
-function appendToOutput(commandText, outputText) { // Parameters might not be needed anymore
+function appendToOutput(commandText, outputText) {
     const output = document.getElementById('output');
-    const inputLine = document.getElementById('input-line'); // Get the input line container
 
-    // REMOVED: Logic to display command/output text here, handled in processCommand/typeOut
+    // If commandText is provided, display the command line prompt + command
+    if (commandText) {
+        const promptLine = document.createElement('div');
+        promptLine.className = 'input-line'; // Reuse class for styling
+        // Escape HTML in commandText if necessary, but simple commands are likely fine
+        promptLine.innerHTML = `<div class="prompt">user@charan.xyz:~$</div><div>${commandText}</div>`;
+        output.appendChild(promptLine);
+    }
 
-    // --- Logic to add ONLY the prompt line ---
-    // Create a new input line structure (prompt + input field container)
-    // This might be simplified if your HTML structure is different
-    // This assumes we want a fresh input line after each command/output.
-    // If we are reusing the existing #input-line, this needs adjustment.
+    // If outputText is provided (and different from commandText, though not strictly checked here),
+    // display it. In the current setup, typeOut handles the actual command output.
+    // This function is now primarily for the command echo and the next prompt line.
 
-    // For now, let's assume we just need to make sure the #input-line is visible and scrolled correctly.
-    // The prompt itself is part of the static HTML in #input-line.
+    // If commandText is empty string (''), it signifies we just need the next prompt line
+    if (commandText === '') {
+        const nextPromptLine = document.getElementById('input-line').cloneNode(true);
+        const inputInPrompt = nextPromptLine.querySelector('input');
+        if(inputInPrompt) inputInPrompt.remove(); // Remove input field from cloned prompt
+        nextPromptLine.removeAttribute('id'); // Remove ID from clone
+        output.appendChild(nextPromptLine);
+    }
 
-    // Ensure the static input line is visible and at the bottom
-    inputLine.style.display = 'flex'; // Ensure it's visible if hidden previously
-    scrollToBottom(); // Scroll down after adding content or prompt
-    // --- End prompt logic ---
+    scrollToBottom(); // Scroll the output into view
 }

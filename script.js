@@ -282,6 +282,7 @@ function appendToOutput(commandText, outputText) {
     const output = document.getElementById('output');
 
     // If commandText is provided, display the command line prompt + command
+    /* // REMOVING THIS BLOCK
     if (commandText) {
         const promptLine = document.createElement('div');
         promptLine.className = 'input-line'; // Reuse class for styling
@@ -289,12 +290,15 @@ function appendToOutput(commandText, outputText) {
         promptLine.innerHTML = `<div class="prompt">user@charan.xyz:~$</div><div>${commandText}</div>`;
         output.appendChild(promptLine);
     }
+    */
 
     // If outputText is provided (and different from commandText, though not strictly checked here),
     // display it. In the current setup, typeOut handles the actual command output.
     // This function is now primarily for the command echo and the next prompt line.
 
     // If commandText is empty string (''), it signifies we just need the next prompt line
+    // THIS PART IS ALSO NOT NEEDED as typeOut calls this after finishing
+    /* // REMOVING THIS BLOCK TOO
     if (commandText === '') {
         const nextPromptLine = document.getElementById('input-line').cloneNode(true);
         const inputInPrompt = nextPromptLine.querySelector('input');
@@ -302,6 +306,8 @@ function appendToOutput(commandText, outputText) {
         nextPromptLine.removeAttribute('id'); // Remove ID from clone
         output.appendChild(nextPromptLine);
     }
+    */
 
+    // The only thing this function needs to do now is ensure scrolling
     scrollToBottom(); // Scroll the output into view
 }

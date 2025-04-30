@@ -181,6 +181,10 @@ input.cmdline:focus {
         max-height: 80vh; /* Ensure it doesn't exceed viewport height */
     }
 
+    #welcome-overlay {
+        display: none; /* Hide welcome overlay on smaller screens */
+    }
+
     #output-container {
         padding: 15px;
     }
@@ -188,12 +192,6 @@ input.cmdline:focus {
     .input-line {
         width: calc(100% - 30px);
         padding: 8px 15px;
-    }
-
-    #welcome-overlay p {
-        font-size: 1.5em;
-        width: 95%;
-        text-align: center;
     }
 
     /* Improve touch targets */

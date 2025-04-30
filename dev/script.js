@@ -1,20 +1,130 @@
 document.addEventListener('DOMContentLoaded', (event) => {
-    const welcomeMessage = "Welcome to Charan.xyz, my personal website.\n Im a 4th year ECE student at Ohio State.\n\nType 'help' to see available commands.";
-    appendToOutput(welcomeMessage);
-});
+    // const welcomeMessage = "Welcome to Charan.xyz, my personal website.\n Im a 4th year ECE student at Ohio State.\n\nType 'help' to see available commands.";
+    // appendToOutput(welcomeMessage); // Removed: Welcome message now in HTML overlay
 
-document.getElementById('input').addEventListener('keydown', function(event) {
-    if (event.key === "Enter") {
-        processCommand(this.value);
-        this.value = ''; // Clear input after enter
+    const inputElement = document.getElementById('input');
+    const welcomeOverlay = document.getElementById('welcome-overlay');
+    const msg1 = document.getElementById('welcome-msg-1');
+    const msg2 = document.getElementById('welcome-msg-2');
+    const msg3 = document.getElementById('welcome-msg-3');
+
+    const msg1Text = "Welcome to my personal website.";
+    const msg2Text = "I'm an ECE student at Ohio State.";
+    const msg3Text = "Type 'help' in the terminal to start.";
+
+    const typingSpeed = 30; // Milliseconds per character
+    const backspaceSpeed = 20; // Faster backspace speed
+    const messageDelay = 1000; // Delay after a message finishes typing/backspacing
+
+    // Helper function for typing effect
+    function typeWelcomeMessage(element, text, speed, callback) {
+        let charIndex = 0;
+        element.textContent = '';
+
+        function typeChar() {
+            if (charIndex < text.length) {
+                element.textContent += text[charIndex++];
+                setTimeout(typeChar, speed);
+            } else if (callback) {
+                setTimeout(callback, messageDelay); // Wait before calling next step (e.g., backspace)
+            }
+        }
+        typeChar();
+    }
+
+    // Helper function for backspace effect
+    function backspaceWelcomeMessage(element, speed, callback) {
+        let text = element.textContent;
+        
+        function backspaceChar() {
+            if (text.length > 0) {
+                text = text.slice(0, -1);
+                element.textContent = text;
+                setTimeout(backspaceChar, speed);
+            } else if (callback) {
+                setTimeout(callback, messageDelay / 2); // Shorter delay before typing next message
+            }
+        }
+        backspaceChar();
+    }
+
+    // Start the typing/backspacing sequence
+    if (msg1 && msg2 && msg3) {
+        setTimeout(() => { // Initial delay
+            typeWelcomeMessage(msg1, msg1Text, typingSpeed, () => {
+                // After msg1 types, backspace it
+                backspaceWelcomeMessage(msg1, backspaceSpeed, () => {
+                    // After msg1 backspaces, type msg2
+                    typeWelcomeMessage(msg2, msg2Text, typingSpeed, () => {
+                        // After msg2 types, backspace it
+                        backspaceWelcomeMessage(msg2, backspaceSpeed, () => {
+                            // After msg2 backspaces, type msg3
+                            typeWelcomeMessage(msg3, msg3Text, typingSpeed, null); // Pass null callback
+                        });
+                    });
+                });
+            });
+        }, 500); // Short initial delay
     }
 });
 
+// Command History
+let commandHistory = [];
+let historyIndex = -1; // Initialize history index
 
+const inputElement = document.getElementById('input');
+
+inputElement.addEventListener('keydown', function(event) {
+    const command = this.value.trim();
+    const msg3Element = document.getElementById('welcome-msg-3');
+
+    if (event.key === "Enter") {
+        // Check if the command is 'help' and fade out the persistent message
+        if (command.toLowerCase() === 'help' && msg3Element) {
+             msg3Element.classList.add('fade-out'); // Add class to trigger CSS fade
+        }
+
+        if (command) {
+            processCommand(command);
+            // Add to history only if it's different from the last command
+            if (commandHistory.length === 0 || commandHistory[commandHistory.length - 1] !== command) {
+                 commandHistory.push(command);
+            }
+            historyIndex = commandHistory.length; // Reset history index to the end
+            this.value = ''; // Clear input after enter
+        } else {
+            // If Enter is pressed with no command, just add a new prompt line
+            appendToOutput('', ''); // Pass empty strings to signify no command was run
+        }
+    } else if (event.key === "ArrowUp") {
+        event.preventDefault(); // Prevent cursor jump
+        if (historyIndex > 0) {
+            historyIndex--;
+            this.value = commandHistory[historyIndex];
+            // Move cursor to end of the restored command
+            setTimeout(() => this.selectionStart = this.selectionEnd = this.value.length, 0);
+        }
+    } else if (event.key === "ArrowDown") {
+        event.preventDefault(); // Prevent cursor jump
+        if (historyIndex < commandHistory.length - 1) {
+            historyIndex++;
+            this.value = commandHistory[historyIndex];
+            // Move cursor to end of the restored command
+            setTimeout(() => this.selectionStart = this.selectionEnd = this.value.length, 0);
+        } else if (historyIndex === commandHistory.length - 1) {
+            // If at the bottom of history, pressing down again clears the input
+            historyIndex = commandHistory.length;
+            this.value = '';
+        }
+    }
+});
 
 function processCommand(command) {
     const output = document.getElementById('output');
-    const newLine = document.createElement('div');
+    // Display the command line itself before processing/typing output
+    appendToOutput(command, command);
+
+    let resumeViewed = false; // Assuming this should be scoped or managed differently if persistence is needed
 
     switch (command.toLowerCase()) {
         case 'help':
@@ -116,42 +226,48 @@ function processCommand(command) {
             break;
             
         default:
-            newLine.textContent = 'Error: Command not found. type help for a list of commands';
+            // Create a div for the error message directly
+            const errorLine = document.createElement('div');
+            errorLine.textContent = 'Error: Command not found. type help for a list of commands';
+            output.appendChild(errorLine); // Append the error line
+            appendToOutput('', ''); // Append the next prompt line
+            return; // Exit switch to avoid calling typeOut
     }
-    output.appendChild(newLine);
-    appendToOutput('');
+    // Note: typeOut now handles appending the next prompt after it finishes
 }
 
 function typeOut(lines) {
     const output = document.getElementById('output');
     let currentLine = 0;
-    let htmlContent = output.innerHTML; // Start with current output content
+
     function typeLine() {
         if (currentLine < lines.length) {
             let line = lines[currentLine];
             let charIndex = 0;
+            let currentLineDiv = document.createElement('div'); // Create div for the line
+            output.appendChild(currentLineDiv); // Append div to output area
+
             let typeChar = function() {
                 if (charIndex < line.length) {
-                    htmlContent += line[charIndex++]; // Accumulate characters in htmlContent
-                    output.innerHTML = htmlContent; // Update innerHTML with the accumulated content
-                    scrollToBottom(); // Scroll every time a new character is added
-                    setTimeout(() => typeChar(line, charIndex, output, htmlContent), 10); // Typing speed
+                    currentLineDiv.textContent += line[charIndex++]; // Append char to the line div
+                    scrollToBottom();
+                    setTimeout(typeChar, 10); // Typing speed
                 } else {
-                    htmlContent += '<br>'; // Add a single break after each line
+                    // Finished typing this line
                     currentLine++;
                     if (currentLine < lines.length) {
-                        setTimeout(typeLine, 500); // Delay before next line if more lines exist
+                        setTimeout(typeLine, 10); // Start next line quickly
                     } else {
-                        htmlContent += '<br>'; // Add an extra break only after the entire command's output
-                        output.innerHTML = htmlContent; // Update the output one last time
+                        // Finished typing all lines for this command
+                        appendToOutput('', ''); // Append the next prompt line *after* all typing is done
                     }
                 }
             };
-            typeChar();
+            typeChar(); // Start typing the first character of the current line
         }
     }
 
-    typeLine();
+    typeLine(); // Start typing the first line
 }
 
 function scrollToBottom() {
@@ -159,15 +275,31 @@ function scrollToBottom() {
     outputContainer.scrollTop = outputContainer.scrollHeight;
 }
 
-function appendToOutput(text) {
+// Modified appendToOutput to handle displaying the command line or just the next prompt
+function appendToOutput(commandText, outputText) {
     const output = document.getElementById('output');
-    const newLine = document.createElement('div');
-    newLine.textContent = text;
-    output.appendChild(newLine);
 
-    const spacing = document.createElement('div');
-    spacing.innerHTML = '&nbsp;'; // Non-breaking space for an empty line
-    output.appendChild(spacing);
+    // If commandText is provided, display the command line prompt + command
+    if (commandText) {
+        const promptLine = document.createElement('div');
+        promptLine.className = 'input-line'; // Reuse class for styling
+        // Escape HTML in commandText if necessary, but simple commands are likely fine
+        promptLine.innerHTML = `<div class="prompt">user@charan.xyz:~$</div><div>${commandText}</div>`;
+        output.appendChild(promptLine);
+    }
 
-    scrollToBottom(); // Call this function to scroll the output into view
+    // If outputText is provided (and different from commandText, though not strictly checked here),
+    // display it. In the current setup, typeOut handles the actual command output.
+    // This function is now primarily for the command echo and the next prompt line.
+
+    // If commandText is empty string (''), it signifies we just need the next prompt line
+    if (commandText === '') {
+        const nextPromptLine = document.getElementById('input-line').cloneNode(true);
+        const inputInPrompt = nextPromptLine.querySelector('input');
+        if(inputInPrompt) inputInPrompt.remove(); // Remove input field from cloned prompt
+        nextPromptLine.removeAttribute('id'); // Remove ID from clone
+        output.appendChild(nextPromptLine);
+    }
+
+    scrollToBottom(); // Scroll the output into view
 }
